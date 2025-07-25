@@ -13,3 +13,67 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User{
+  id      Int  @id @default(autoincrement())
+  name    String
+  email    String
+  password String
+}
+
+
+//zap should be associated with the user
+
+model Zap{
+  id   String @id @default(uuid()) 
+  triggerid   String 
+  trigger   Trigger?
+  actions Action[]
+  zapruns ZapRun[]
+}
+
+
+model Trigger{
+  id String @id  @default(uuid())
+  zapid String  @unique
+  triggerid String
+  type AvailableTrigger @relation(fields: [triggerid], references: [id])//foreign key relation
+  zap Zap @relation(fields: [zapid], references: [id])
+}
+
+model AvailableTrigger{
+  id String @id @default(uuid())
+  name String
+  triggers Trigger[]
+}
+
+
+model Action{
+  id String @id @default(uuid())
+  zapid String
+  actionid String
+  type AvailableAction @relation(fields: [actionid], references: [id]) //foreign key relation same for both trigger and action
+  zap Zap @relation(fields: [zapid], references: [id])
+}
+
+
+model AvailableAction{
+  id String @id @default(uuid())
+  name String
+  actions Action[]
+  // zapruns ZapRun[] // this is to keep track of the runs of this action
+}
+
+model ZapRun{
+  id String @id @default(uuid())
+  zapid String
+  metadata Json
+  zap Zap @relation(fields: [zapid], references: [id])
+  outbox OutBox?
+}
+
+model OutBox{
+  id String @id @default(uuid())
+  zaprunid String @unique
+  zaprun ZapRun @relation(fields: [zaprunid], references: [id])
+}
