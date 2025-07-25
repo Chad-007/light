@@ -77,3 +77,5 @@ model OutBox{
   zaprunid String @unique
   zaprun ZapRun @relation(fields: [zaprunid], references: [id])
 }   
+
+
