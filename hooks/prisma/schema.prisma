@@ -39,7 +39,7 @@ model Trigger{
   triggerid String
   type AvailableTrigger @relation(fields: [triggerid], references: [id])//foreign key relation
   zap Zap @relation(fields: [zapid], references: [id])
-  order  Int @default(0) // to maintain order of triggers in a zap
+  
 }
 
 model AvailableTrigger{
@@ -55,6 +55,7 @@ model Action{
   actionid String
   type AvailableAction @relation(fields: [actionid], references: [id]) //foreign key relation same for both trigger and action
   zap Zap @relation(fields: [zapid], references: [id])
+  order  Int @default(0) // to maintain order of triggers in a zap
 }
 
 

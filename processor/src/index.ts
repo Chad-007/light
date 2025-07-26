@@ -19,10 +19,13 @@ async function hey(){
          producer.send({    
                 topic: 'outbox_events',
                 messages: pending.map(row => ({ value: row.zaprunid }))  
-            }).then(() => {
-                console.log("send event");
-            }).catch(err => {
-                console.error(`Failed to send outbox event`, err);
+            })
+            await client.outBox.deleteMany({
+                where: {
+                    id: {
+                        in: pending.map(row => row.id)
+                    }
+                }
             });
 }
 }
