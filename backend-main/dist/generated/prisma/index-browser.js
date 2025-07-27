@@ -129,7 +129,8 @@ exports.Prisma.UserScalarFieldEnum = {
 
 exports.Prisma.ZapScalarFieldEnum = {
   id: 'id',
-  triggerid: 'triggerid'
+  triggerid: 'triggerid',
+  userId: 'userId'
 };
 
 exports.Prisma.TriggerScalarFieldEnum = {

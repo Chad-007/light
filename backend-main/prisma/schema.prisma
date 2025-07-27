@@ -19,6 +19,7 @@ model User{
   name    String
   email    String
   password String
+  zaps Zap[] // relation to zaps
 }
 
 
@@ -28,6 +29,8 @@ model Zap{
   id   String @id @default(uuid()) 
   triggerid   String 
   trigger   Trigger?
+  userId Int
+  user User @relation(fields: [userId], references: [id]) // foreign key relation
   actions Action[]
   zapruns ZapRun[]
 }
