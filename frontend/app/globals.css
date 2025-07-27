@@ -1,3 +1,170 @@
 @import "tailwindcss";
-
 @tailwind utilities;
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #111111;
+  --card-foreground: #ffffff;
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: #1f2937;
+  --secondary-foreground: #ffffff;
+  --muted: #374151;
+  --muted-foreground: #9ca3af;
+  --border: #374151;
+  --input: #1f2937;
+  --ring: #6366f1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #000000;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* Clean scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111111;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+/* Professional card component */
+.card {
+  background: #111111;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: #4b5563;
+}
+
+/* Clean button styles */
+.btn-primary {
+  background: #6366f1;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #d1d5db;
+  border: 1px solid #374151;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #1f2937;
+  border-color: #4b5563;
+  color: #ffffff;
+}
+
+/* Smooth transitions */
+.smooth-transition {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Additional utility classes for futuristic theme */
+.hologram-text {
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+  background-size: 400% 400%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: hologram 4s ease-in-out infinite;
+}
+
+.data-grid {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.2) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.2) 2px, transparent 2px);
+  background-size: 60px 60px;
+}
+
+.scan-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.scan-line::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent);
+  animation: scan 3s linear infinite;
+}
+
+.terminal-cursor::after {
+  content: '|';
+  animation: blink 1s infinite;
+  color: #3b82f6;
+}
+
+@keyframes hologram {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes scan {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}

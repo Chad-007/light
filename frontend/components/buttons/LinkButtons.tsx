@@ -1,9 +1,13 @@
 "use client";
 import React, { ReactNode } from 'react';
-export const LinkButtons = ({children,onClick}:{children:ReactNode,onClick:()=>void}) => {
+
+export const LinkButtons = ({ children, onClick }: { children: ReactNode, onClick: () => void }) => {
     return (
-        <div className="px-2 py-4 cursor-pointer hover:bg-amber-100 m-2" onClick={onClick}>
+        <button 
+            className="px-4 py-2 text-gray-300 hover:text-white transition-colors duration-200" 
+            onClick={onClick}
+        >
             {children}
-        </div>
+        </button>
     );
 }

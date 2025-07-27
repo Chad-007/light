@@ -1,32 +1,54 @@
 "use client";
 import { AppBar } from "@/components/Appbar";
 import { Input } from "@/components/Input";
+import { MainButton } from "@/components/buttons/MainButton";
+import { useState } from "react";
+
 export default function SignupPage() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
     <>
       <AppBar />
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-        <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold mb-4">Signup</h1>
-            <p className="text-gray-700 mb-6">Please fill in the form to create an account.</p>
-        </div>
-        <div className="mt-8 text-center">
+      <div className="flex flex-col items-center justify-center min-h-screen px-4">
+        <div className="card p-8 max-w-md w-full space-y-6">
+          <div className="text-center space-y-4">
+            <h1 className="text-3xl font-bold text-white">
+              Create Account
+            </h1>
+            <p className="text-gray-400">
+              Start automating your workflows today
+            </p>
+          </div>
+
+          <div className="space-y-4">
             <Input
-                value=""
-                onChange={() => {}}
-                placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
             />
             <Input 
-                value=""
-                onChange={() => {}}
-                placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
             />
-        
-          <Input
-            value=""
-            onChange={() => {}}
-            placeholder="Password"
-          />
+            <Input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+            />
+          </div>
+
+          <div className="space-y-4">
+            <MainButton onClick={() => {}} size="big">
+              Create Account
+            </MainButton>
+            <p className="text-center text-sm text-gray-400">
+              Already have an account? <span className="text-indigo-500 cursor-pointer hover:underline">Sign in</span>
+            </p>
+          </div>
         </div>
       </div>
     </>
