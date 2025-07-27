@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 export const AppBar = () => {
     const router = useRouter();
     return <div className="flex border-b justify-between">
-        <div className="p-4 flex-col justify-center">zapier</div>
+        <div className="p-4 flex-col justify-center text-4xl font-extrabold px-0">Light</div>
         <div className="flex items-center gap-4">
            <LinkButtons onClick={() => {}}>Contact</LinkButtons>
             <LinkButtons onClick={() => {
