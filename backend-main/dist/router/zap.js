@@ -13,62 +13,72 @@ const express_1 = require("express");
 const middleware_1 = require("../middleware");
 const types_1 = require("../types");
 const prisma_1 = require("../generated/prisma");
-const prisma = new prisma_1.PrismaClient();
 const zapRouter = (0, express_1.Router)();
+const prismaClient = new prisma_1.PrismaClient();
 zapRouter.post("/", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // @ts-ignore
     const userId = req.userId;
     const body = req.body;
+    console.log('userId from middleware:', userId);
+    if (!userId) {
+        return res.status(401).json({
+            message: "User ID not found in request"
+        });
+    }
     const parsedData = types_1.ZapSchema.safeParse(body);
     if (!parsedData.success) {
-        return res.status(400).json({
-            message: "Invalid input data"
+        return res.status(411).json({
+            message: "Incorrect inputs"
         });
     }
     try {
-        yield prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+        const zapId = yield prismaClient.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
             const zap = yield tx.zap.create({
                 data: {
-                    userId: userId,
+                    userId: parseInt(userId),
                     triggerid: "",
                     actions: {
                         create: parsedData.data.actions.map((x, index) => ({
-                            actionid: x.actionId, // Changed to actionId
-                            order: index || 0,
+                            actionid: x.actionId,
+                            order: index,
                         }))
-                    },
+                    }
                 }
             });
             const trigger = yield tx.trigger.create({
                 data: {
-                    triggerid: parsedData.data.triggerId, // Changed to triggerId
+                    triggerid: parsedData.data.triggerId,
                     zapid: zap.id,
                 }
             });
             yield tx.zap.update({
-                where: { id: zap.id },
-                data: { triggerid: trigger.id }
+                where: {
+                    id: zap.id
+                },
+                data: {
+                    triggerid: trigger.id
+                }
             });
-            res.status(201).json({
-                message: "Zap created successfully",
-                zapId: zap.id
-            });
+            return zap.id;
         }));
+        return res.json({
+            zapId
+        });
     }
     catch (error) {
         console.error("Error creating zap:", error);
-        res.status(500).json({
+        return res.status(500).json({
             message: "Internal server error"
         });
     }
 }));
 zapRouter.get("/", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        //@ts-ignore
+        // @ts-ignore
         const userId = req.userId;
-        const zaps = yield prisma.zap.findMany({
+        const zaps = yield prismaClient.zap.findMany({
             where: {
-                userId: userId
+                userId: parseInt(userId)
             },
             include: {
                 actions: {
@@ -86,11 +96,13 @@ zapRouter.get("/", middleware_1.authMiddleware, (req, res) => __awaiter(void 0, 
                 }
             }
         });
-        res.json(zaps);
+        return res.json({
+            zaps
+        });
     }
     catch (error) {
         console.error("Error fetching zaps:", error);
-        res.status(500).json({
+        return res.status(500).json({
             message: "Internal server error"
         });
     }
@@ -100,10 +112,10 @@ zapRouter.get("/:zapId", middleware_1.authMiddleware, (req, res) => __awaiter(vo
         //@ts-ignore
         const userId = req.userId;
         const zapId = req.params.zapId;
-        const zap = yield prisma.zap.findFirst({
+        const zap = yield prismaClient.zap.findFirst({
             where: {
-                userId: userId,
-                id: zapId
+                id: zapId,
+                userId: parseInt(userId)
             },
             include: {
                 actions: {
@@ -121,11 +133,18 @@ zapRouter.get("/:zapId", middleware_1.authMiddleware, (req, res) => __awaiter(vo
                 }
             }
         });
-        res.json(zap);
+        if (!zap) {
+            return res.status(404).json({
+                message: "Zap not found"
+            });
+        }
+        return res.json({
+            zap
+        });
     }
     catch (error) {
         console.error("Error fetching zap:", error);
-        res.status(500).json({
+        return res.status(500).json({
             message: "Internal server error"
         });
     }

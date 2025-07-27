@@ -2,126 +2,155 @@ import { Router } from "express";
 import { authMiddleware } from "../middleware";
 import { ZapSchema } from "../types";
 import { PrismaClient } from "../generated/prisma";
-const prisma = new PrismaClient();
-const zapRouter = Router();
 
-zapRouter.post("/", authMiddleware,async (req, res) => {
+const zapRouter = Router();
+const prismaClient = new PrismaClient();
+
+zapRouter.post("/", authMiddleware, async (req, res) => {
     // @ts-ignore
-    const userId = req.userId;
+    const userId: string = req.userId;
     const body = req.body;
-    const parsedData  = ZapSchema.safeParse(body); 
-    if (!parsedData.success) {
-        return res.status(400).json({
-            message: "Invalid input data"
+    
+    console.log('userId from middleware:', userId);
+    
+    if (!userId) {
+        return res.status(401).json({
+            message: "User ID not found in request"
         });
     }
     
+    const parsedData = ZapSchema.safeParse(body);
+    
+    if (!parsedData.success) {
+        return res.status(411).json({
+            message: "Incorrect inputs"
+        });
+    }   
+
     try {
-        await prisma.$transaction(async tx => {
+        const zapId = await prismaClient.$transaction(async tx => {
             const zap = await tx.zap.create({
                 data: {
-                    userId: userId,
-                    triggerid: "",
+                    userId: parseInt(userId),
+                    triggerid: "", 
                     actions: {
                         create: parsedData.data.actions.map((x, index) => ({
-                            actionid: x.actionId, // Changed to actionId
-                            order: index || 0,
+                            actionid: x.actionId, 
+                            order: index,
                         }))
-                    },
+                    }
                 }
-            });
+            })
 
             const trigger = await tx.trigger.create({
                 data: {
-                    triggerid: parsedData.data.triggerId, // Changed to triggerId
-                    zapid: zap.id,
+                    triggerid: parsedData.data.triggerId, 
+                    zapid: zap.id, 
                 }
             });
 
             await tx.zap.update({
-                where: { id: zap.id },
-                data: { triggerid: trigger.id }
-            });
-            
-            res.status(201).json({
-                message: "Zap created successfully",
-                zapId: zap.id
-            });
+                where: {
+                    id: zap.id
+                },
+                data: {
+                    triggerid: trigger.id 
+                }
+            })
+
+            return zap.id;
+        });
+
+        return res.json({
+            zapId
         });
     } catch (error) {
         console.error("Error creating zap:", error);
-        res.status(500).json({
+        return res.status(500).json({
             message: "Internal server error"
         });
     }
-});
+})
 
-zapRouter.get("/", authMiddleware,async (req, res) => {
+zapRouter.get("/", authMiddleware, async (req, res) => {
     try {
-        //@ts-ignore
+        // @ts-ignore
         const userId = req.userId;
-        const zaps = await prisma.zap.findMany({
+        const zaps = await prismaClient.zap.findMany({
             where: {
-                userId: userId
+                userId: parseInt(userId)
             },
             include: {
-               actions:{
-                include:{
-                    type: true
+                actions: {
+                   include: {
+                        type: true
+                   },
+                   orderBy: {
+                       order: 'asc' 
+                   }
                 },
-                orderBy: {
-                    order: 'asc'
+                trigger: {
+                    include: {
+                        type: true
+                    }
                 }
-               },
-               trigger:{
-                include:{
-                  type: true
-                }
-               }
             }
         });
-        res.json(zaps);
+
+        return res.json({
+            zaps
+        });
     } catch (error) {
         console.error("Error fetching zaps:", error);
-        res.status(500).json({
+        return res.status(500).json({
             message: "Internal server error"
         });
     }
-});
+})
 
-zapRouter.get("/:zapId", authMiddleware, async(req, res) => {
+zapRouter.get("/:zapId", authMiddleware, async (req, res) => {
     try {
         //@ts-ignore
         const userId = req.userId;
         const zapId = req.params.zapId;
-        const zap = await prisma.zap.findFirst({
+
+        const zap = await prismaClient.zap.findFirst({
             where: {
-                userId: userId,
-                id: zapId
+                id: zapId,
+                userId: parseInt(userId) 
             },
             include: {
-               actions:{
-                include:{
-                    type: true
+                actions: {
+                   include: {
+                        type: true
+                   },
+                   orderBy: {
+                       order: 'asc' 
+                   }
                 },
-                orderBy: {
-                    order: 'asc'
+                trigger: {
+                    include: {
+                        type: true
+                    }
                 }
-               },
-               trigger:{
-                include:{
-                  type: true
-                }
-               }
             }
         });
-        res.json(zap);
+
+        if (!zap) {
+            return res.status(404).json({
+                message: "Zap not found"
+            });
+        }
+
+        return res.json({
+            zap
+        });
     } catch (error) {
         console.error("Error fetching zap:", error);
-        res.status(500).json({
+        return res.status(500).json({
             message: "Internal server error"
         });
     }
-});
- 
+})
+
 export default zapRouter;
