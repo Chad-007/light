@@ -1,45 +1,39 @@
 "use client";
 import { AppBar } from "@/components/Appbar";
-
+import { ZapBox } from "@/components/ZapBox";
+import { LinkButtons } from "@/components/buttons/LinkButtons";
+import {  useState } from "react";
 export default function Create(){
     const [selectedTrigger, setSelectedTrigger] = useState("");
-    const [selectedAction, setSelectedAction] = useState("");
-    const [triggerOptions, setTriggerOptions] = useState([]);
-    const [actionOptions, setActionOptions] = useState([]);
-    return <div>
+    const [selectedAction, setSelectedAction] = useState<{
+        availableActionId:string,
+        availableActionName:string
+    }[]>([]);
 
-        <AppBar />
-        <div className="flex flex-col items-center justify-center min-h-screen px-4">
-            <div className="card p-8 max-w-md w-full space-y-6">
-                <h1 className="text-3xl font-bold text-white">Create Zap</h1>
-                <p className="text-gray-400">This is where you can create your zaps.</p>
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-300">Select Trigger</label>
-                        <select 
-                            value={selectedTrigger} 
-                            onChange={(e) => setSelectedTrigger(e.target.value)} 
-                            className="mt-1 block w-full bg-gray-800 border border-gray-700 text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        >
-                            {triggerOptions.map((option) => (
-                                <option key={option.value} value={option.value}>{option.label}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-300">Select Action</label>
-                        <select 
-                            value={selectedAction} 
-                            onChange={(e) => setSelectedAction(e.target.value)} 
-                            className="mt-1 block w-full bg-gray-800 border border-gray-700 text-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        >
-                            {actionOptions.map((option) => (
-                                <option key={option.value} value={option.value}>{option.label}</option>
-                            ))}
-                        </select>
-                    </div>
+    const handleTriggerSelect = (trigger: string) => {
+        setSelectedTrigger(trigger);
+    };
+    const handleActionSelect = (action: { availableActionId: string, availableActionName: string }) => {
+        setSelectedAction(prevActions => [...prevActions, action]);
+    };
+
+    return ( 
+    <div>
+            <AppBar />
+            <div className="w-full min-h-screen bg-slate flex-col justify-center ">
+                <ZapBox name={selectedTrigger? selectedTrigger : "Trigger"} index={1} />
             </div>
+            <div className="w-full min-h-screen bg-slate flex-col justify-center ">
+               {/* {selectedAction.map((action, index) => (
+                    <ZapBox name={action?action.availableActionName:"Action"} index={index + 2} />
+               ))}  */}
+            </div>
+            <LinkButtons onClick={() => {
+                setSelectedAction(a=>[...a, { availableActionId: "newActionId", availableActionName: "New Action" }]);
+             
+            }}>
+             hey
+            </LinkButtons>
         </div>
-    </div>
-    </div>
+    );
 }
