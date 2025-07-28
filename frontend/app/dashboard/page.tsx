@@ -1,11 +1,11 @@
 "use client"
 import { AppBar } from "@/components/Appbar";
 import { MainButton } from "@/components/buttons/MainButton";
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { BACKEND_URL } from "../config";
 import axios from "axios";
-
- 
+import { LinkButtons } from "@/components/buttons/LinkButtons";
+import { useRouter } from "next/navigation";
 interface Zap {
       "id": string,
       "triggerid": string,
@@ -54,8 +54,9 @@ function  Uselights(){
         lights
     }
 }
-export default function dashboard(){
+export default function Dashboard(){
     const {loading,lights} = Uselights();
+    const router = useRouter();
     return (
         <div className="min-h-screen">
             <AppBar/>
@@ -71,7 +72,7 @@ export default function dashboard(){
                     </div>
                     <div className="mt-6">
                         <MainButton onClick={() => {
-                            alert('Create Zap button clicked'); 
+                            router.push("/zap/create");
                         }}>
                             Create Zap 
                         </MainButton>
@@ -91,6 +92,7 @@ export default function dashboard(){
 }
 
 function ZapTable({ zaps }: { zaps: Zap[] }) {
+    const router = useRouter();
     if (zaps.length === 0) {
         return (
             <div className="px-4 py-8">
@@ -156,6 +158,11 @@ function ZapTable({ zaps }: { zaps: Zap[] }) {
                                             {action.type.name}
                                         </span>
                                     ))}
+                                </td>
+                                <td>
+                                    <LinkButtons onClick={() => {
+                                        router.push("/zap/"+zap.id);
+                                    }}>Click</LinkButtons>
                                 </td>
                             </tr>
                         ))}
