@@ -3,8 +3,11 @@ import { AppBar } from "@/components/Appbar";
 import { Input } from "@/components/Input";
 import { MainButton } from "@/components/buttons/MainButton";
 import { useState } from "react";
-
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { BACKEND_URL } from "../config";
 export default function SigninPage() {
+  const router = useRouter();  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -36,7 +39,14 @@ export default function SigninPage() {
           </div>
 
           <div className="space-y-4">
-            <MainButton onClick={() => {}} size="big">
+            <MainButton onClick={async () => {
+              const res = await axios.post(`${BACKEND_URL}/api/v1/user/signin`,{
+              username:email,
+              password:password,
+              })
+              localStorage.setItem("token",res.data.token)
+              router.push("/dashboard")
+            }} size="big">
               Sign In
             </MainButton>
             <p className="text-center text-sm text-gray-400">
