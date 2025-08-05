@@ -1,1 +1,1 @@
-Ai Agentic Workflow Automation Assistent (WIP)
+Ai Agentic Workflow Automation Assistant (WIP)
